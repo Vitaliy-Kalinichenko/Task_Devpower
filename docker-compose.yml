@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  get_data:
+    build: ./docker/python/
+    command: bash -c 'sleep 10 && python /code/get_data.py' # не получилось через wait-for-it.sh
+    env_file: .env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+  print_data:
+    build: ./docker/python/
+    command: python /code/print_data.py
+    env_file: .env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+  db:
+    build: ./docker/database/
+    env_file: .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/posgresql/data/
+
+volumes:
+  postgres_data:
